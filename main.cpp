@@ -4,10 +4,10 @@
 using namespace cv;
 using namespace std;
 
-void func(Mat&, Mat&);
+void func(Mat);
 
 int main(){
-  Mat frame, frame_threshold;
+  Mat frame;
   VideoCapture cap;
 
   cap.open(0);
@@ -23,16 +23,22 @@ int main(){
       break;
     }
 
-    func(frame, frame_threshold);
-    imshow("Live", frame_threshold);
+    func(frame);
+    imshow("Live", frame);
     if(waitKey(5) >= 0)
       break;
   }
   return 0;
 }
 
-void func(Mat& src, Mat& dst) {
-  Mat src_HSV;
+void func(Mat src) {
+  Mat src_HSV, dst, blurred;
+  vector<vector<Point>> contours;
+  vector<Vec4i> hierarchy;
+
   cvtColor(src, src_HSV, COLOR_BGR2HSV);
-  inRange(src_HSV, Scalar(110, 50, 50), Scalar(130, 255, 255), dst);
+  inRange(src_HSV, Scalar(0, 59, 50), Scalar(25, 173, 255), dst);
+  blur(dst, blurred, Size(3, 3));
+  findContours(blurred, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
+  drawContours(src, contours, -1, Scalar(0, 255, 0), 2, 8, hierarchy);
 }
