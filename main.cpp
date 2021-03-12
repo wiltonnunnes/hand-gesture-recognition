@@ -7,14 +7,17 @@ using namespace std;
 void func(Mat);
 
 int main(){
-  Mat frame;
+  Mat frame, X;
   VideoCapture cap;
+  Ptr<ml::ANN_MLP> model;
 
   cap.open(0);
   if(!cap.isOpened()) {
     cerr << "ERROR! Unable to open camera\n";
     return -1;
   }
+
+  model->load("Skin_NonSkin_Model");
 
   for(;;) {
     cap.read(frame);
@@ -23,7 +26,10 @@ int main(){
       break;
     }
 
-    func(frame);
+    frame.convertTo(X, CV_32FC3, 1 / 255);
+    cout << "X = " << X << endl;
+
+    //func(frame);
     imshow("Live", frame);
     if(waitKey(5) >= 0)
       break;
